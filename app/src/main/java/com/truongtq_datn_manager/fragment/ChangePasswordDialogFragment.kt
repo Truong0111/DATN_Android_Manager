@@ -6,15 +6,23 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.DialogFragment
+import androidx.lifecycle.lifecycleScope
+import com.google.gson.Gson
 import com.truongtq_datn_manager.extensions.Constants
 import com.truongtq_datn_manager.databinding.DialogChangepasswordLayoutBinding
 import com.truongtq_datn_manager.extensions.Extensions
 import com.truongtq_datn_manager.extensions.Pref
+import com.truongtq_datn_manager.okhttpcrud.ApiEndpoint
+import com.truongtq_datn_manager.okhttpcrud.PatchRequest
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 
 class ChangePasswordDialogFragment(private val mainActivity: Activity) : DialogFragment() {
 
     private var _binding: DialogChangepasswordLayoutBinding? = null
     private val binding get() = _binding!!
+    private var gson = Gson()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -61,8 +69,23 @@ class ChangePasswordDialogFragment(private val mainActivity: Activity) : DialogF
                 return@setOnClickListener
             }
 
-            val accountId = Pref.getString(mainActivity, "idAccount")
-            //TODO Call api change password
+            val accountId = Pref.getString(mainActivity, Constants.ID_ACCOUNT)
+
+            lifecycleScope.launch(Dispatchers.IO) {
+                val api = "${ApiEndpoint.Endpoint_Account}/$accountId"
+                val requestBody = gson.toJson(mapOf("password" to Extensions.sha256(newPassword)))
+
+                val patchRequest = PatchRequest(api, requestBody)
+                val response = patchRequest.execute(true)
+
+                withContext(Dispatchers.Main) {
+                    if (response != null && response.isSuccessful) {
+                        Extensions.toastCall(mainActivity, "Change password success")
+                    } else {
+                        Extensions.toastCall(mainActivity, "Change password failed")
+                    }
+                }
+            }
         }
     }
 

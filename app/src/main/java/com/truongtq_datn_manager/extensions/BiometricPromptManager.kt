@@ -30,17 +30,14 @@ class BiometricPromptManager(private val activity: AppCompatActivity) {
     }
 
 
-    // Kiểm tra xem sinh trắc học đã được bật chưa
     fun isBiometricEnabled(): Boolean {
         return Pref.getBoolean(activity, Constants.PREF_BIOMETRIC_ENABLED)
     }
 
-    // Bật sinh trắc học sau khi xác thực thành công
     fun enableBiometric() {
         Pref.setBoolean(activity, Constants.PREF_BIOMETRIC_ENABLED, true)
     }
 
-    // Vô hiệu hóa sinh trắc học
     fun disableBiometric() {
         Pref.setBoolean(activity, Constants.PREF_BIOMETRIC_ENABLED, false)
     }

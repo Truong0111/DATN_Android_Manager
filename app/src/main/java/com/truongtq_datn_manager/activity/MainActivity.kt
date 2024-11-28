@@ -15,6 +15,9 @@ import com.truongtq_datn_manager.fragment.ProfileFragment
 import com.truongtq_datn_manager.fragment.QrFragment
 import com.truongtq_datn_manager.fragment.SettingFragment
 import com.truongtq_datn_manager.fragment.TicketFragment
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.Job
+import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.launch
 import java.util.Date
 
@@ -22,7 +25,6 @@ class MainActivity : AppCompatActivity() {
     private lateinit var binding: ActivityMainBinding
     lateinit var biometricPromptManager: BiometricPromptManager
     private var currentButton: Button? = null
-    var isBiometricEnabled = false
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -45,26 +47,27 @@ class MainActivity : AppCompatActivity() {
         }
 
         setupEventListeners()
-        showBiometric(
-            true,
-            description = "Authenticate to next login",
-            startAction = {
-                if (biometricPromptManager.isBiometricEnabled()) {
-                    isBiometricEnabled = true
-                    return@showBiometric
-                }
-            },
-            successAction = {
-                biometricPromptManager.enableBiometric()
-                val tokenBiometric =
-                    Pref.getString(this@MainActivity, Constants.TOKEN_BIOMETRIC)
-                Extensions.saveAuthToken(this@MainActivity, tokenBiometric)
-                Extensions.toastCall(this@MainActivity, "Set biometric success")
-            },
-            failAction = {
-                Extensions.toastCall(this@MainActivity, "Set biometric failed")
-            },
-        )
+    }
+
+    override fun onStart() {
+        super.onStart()
+        if (biometricPromptManager.isBiometricEnabled()) {
+            return
+        } else {
+            showBiometric(
+                description = "Authenticate to next login",
+                successAction = {
+                    biometricPromptManager.enableBiometric()
+                    val tokenBiometric =
+                        Pref.getString(this@MainActivity, Constants.TOKEN_BIOMETRIC)
+                    Extensions.saveAuthToken(this@MainActivity, tokenBiometric)
+                    Extensions.toastCall(this@MainActivity, "Set biometric success")
+                },
+                failAction = {
+
+                },
+            )
+        }
     }
 
     override fun onResume() {
@@ -94,48 +97,24 @@ class MainActivity : AppCompatActivity() {
     }
 
     fun showBiometric(
-        successBool: Boolean,
         title: String = "Authenticate Biometric",
         description: String,
-        startAction: (() -> Unit)? = null,
         successAction: (() -> Unit)? = null,
         failAction: (() -> Unit)? = null,
     ) {
+        lifecycleScope.launch(Dispatchers.Main) {
+            val result = biometricPromptManager.promptResults.first()
+            when (result) {
+                is BiometricPromptManager.BiometricResult.HardwareUnavailable,
+                is BiometricPromptManager.BiometricResult.FeatureUnavailable,
+                is BiometricPromptManager.BiometricResult.AuthenticationNotSet,
+                is BiometricPromptManager.BiometricResult.AuthenticationFailed,
+                is BiometricPromptManager.BiometricResult.AuthenticationError -> {
+                    failAction?.invoke()
+                }
 
-        startAction?.invoke()
-
-        lifecycleScope.launch {
-            biometricPromptManager.promptResults.collect { result ->
-                when (result) {
-                    is BiometricPromptManager.BiometricResult.HardwareUnavailable -> {
-                        isBiometricEnabled = !successBool
-                        failAction?.invoke()
-                    }
-
-                    is BiometricPromptManager.BiometricResult.FeatureUnavailable -> {
-                        isBiometricEnabled = !successBool
-                        failAction?.invoke()
-                    }
-
-                    is BiometricPromptManager.BiometricResult.AuthenticationNotSet -> {
-                        isBiometricEnabled = !successBool
-                        failAction?.invoke()
-                    }
-
-                    is BiometricPromptManager.BiometricResult.AuthenticationSucceed -> {
-                        isBiometricEnabled = successBool
-                        successAction?.invoke()
-                    }
-
-                    is BiometricPromptManager.BiometricResult.AuthenticationFailed -> {
-                        isBiometricEnabled = !successBool
-                        failAction?.invoke()
-                    }
-
-                    is BiometricPromptManager.BiometricResult.AuthenticationError -> {
-                        isBiometricEnabled = !successBool
-                        failAction?.invoke()
-                    }
+                is BiometricPromptManager.BiometricResult.AuthenticationSucceed -> {
+                    successAction?.invoke()
                 }
             }
         }

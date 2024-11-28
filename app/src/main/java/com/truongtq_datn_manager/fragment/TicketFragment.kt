@@ -62,12 +62,15 @@ class TicketFragment(private val mainActivity: MainActivity) : Fragment() {
             val response = getRequest.execute(true)
 
             withContext(Dispatchers.Main) {
-                if (response != null && response.isSuccessful) {
-                    val responseBody = response.body?.string()
+                if (response == null) {
+                    Extensions.toastCall(mainActivity, "Failed to load tickets")
+                    return@withContext
+                }
 
-                    println("Test ticket: $responseBody")
+                val responseBody = response.body!!.string()
 
-                    if (!responseBody.isNullOrEmpty()) {
+                if (response.isSuccessful) {
+                    if (responseBody.isNotEmpty()) {
                         val listType = object : TypeToken<List<TicketResponse>>() {}.type
                         ticketResponse = gson.fromJson(responseBody, listType)
                         val ticketPositionList: List<TicketItem> =
@@ -95,10 +98,13 @@ class TicketFragment(private val mainActivity: MainActivity) : Fragment() {
                             )
                         binding.ticketMain.adapter = adapter
                     } else {
-                        Extensions.toastCall(mainActivity, "Failed to load tickets")
+                        Extensions.toastCall(mainActivity, "You don't have any tickets")
                     }
                 } else {
-                    Extensions.toastCall(mainActivity, "Failed to load tickets")
+                    Extensions.toastCall(
+                        mainActivity,
+                        Extensions.extractJson(responseBody).get("message").toString()
+                    )
                 }
             }
         }

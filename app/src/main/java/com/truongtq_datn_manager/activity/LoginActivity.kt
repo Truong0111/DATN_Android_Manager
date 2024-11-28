@@ -56,39 +56,31 @@ class LoginActivity : AppCompatActivity() {
             biometricPromptManager.promptResults.collect { result ->
                 when (result) {
                     is BiometricPromptManager.BiometricResult.HardwareUnavailable -> {
-                        Log.d("Biometric_Test", "HardwareUnavailable")
                         //Todo OAuth2
                     }
 
                     is BiometricPromptManager.BiometricResult.FeatureUnavailable -> {
-                        Log.d("Biometric_Test", "FeatureUnavailable")
                         //Todo OAuth2
                     }
 
                     is BiometricPromptManager.BiometricResult.AuthenticationNotSet -> {
-                        Log.d("Biometric_Test", "AuthenticationNotSet")
                         //Todo OAuth2
                     }
 
                     is BiometricPromptManager.BiometricResult.AuthenticationSucceed -> {
-                        Log.d("Biometric_Test", "AuthenticationSucceed")
                         //Save biometric
                         val token = Extensions.getAuthToken(this@LoginActivity)
                         if (token != null) {
                             setLifeTime()
-                            Extensions.toastCall(applicationContext, "Login successful.")
                             Extensions.changeIntent(this@LoginActivity, MainActivity::class.java)
-                            return@collect
                         }
                     }
 
                     is BiometricPromptManager.BiometricResult.AuthenticationFailed -> {
-                        Log.d("Biometric_Test", "AuthenticationFailed")
                         //Todo authenticate again or OAuth2
                     }
 
                     is BiometricPromptManager.BiometricResult.AuthenticationError -> {
-                        Log.d("Biometric_Test", "AuthenticationError: ${result.error}")
                         //Todo authenticate again or OAuth2
                     }
                 }
@@ -122,8 +114,15 @@ class LoginActivity : AppCompatActivity() {
             val response = postRequest.execute(false)
 
             withContext(Dispatchers.Main) {
-                if (response != null && response.isSuccessful) {
-                    val token = Extensions.extractJson(response.body!!.string()).get("token")
+                if (response == null) {
+                    Extensions.toastCall(applicationContext, "Login failed")
+                    return@withContext
+                }
+
+                val responseBody = response.body!!.string()
+
+                if (response.isSuccessful) {
+                    val token = Extensions.extractJson(responseBody).get("token")
                     Pref.setString(
                         this@LoginActivity,
                         Constants.JWT,
@@ -133,6 +132,11 @@ class LoginActivity : AppCompatActivity() {
                     val claimToken = Extensions.decodeJWT(token.toString())
                     val idAccount: String = claimToken.first.toString()
                     Pref.setString(this@LoginActivity, Constants.ID_ACCOUNT, idAccount)
+                    Pref.setString(
+                        this@LoginActivity,
+                        Constants.PASSWORD,
+                        Extensions.sha256(passwordInput)
+                    )
 
                     val tokenBiometric = Extensions.sha256(idAccount)
                     Extensions.saveAuthToken(this@LoginActivity, tokenBiometric)
@@ -142,7 +146,11 @@ class LoginActivity : AppCompatActivity() {
                     Extensions.toastCall(applicationContext, "Login successful.")
                     Extensions.changeIntent(this@LoginActivity, MainActivity::class.java);
                 } else {
-                    Extensions.toastCall(applicationContext, "Login failed.")
+                    Extensions.toastCall(
+                        applicationContext,
+                        Extensions.extractJson(responseBody).get("message")
+                            .toString()
+                    )
                 }
             }
         }

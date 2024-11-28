@@ -36,26 +36,7 @@ class SettingFragment(private val mainActivity: MainActivity) : Fragment() {
         binding.settingSwitchBiometric.isChecked = biometricPromptManager.isBiometricEnabled()
         binding.settingSwitchBiometric.setOnClickListener {
             if (binding.settingSwitchBiometric.isChecked) {
-                mainActivity.showBiometric(
-                    true,
-                    description = "Authenticate to next login",
-                    startAction = {
-                        if (biometricPromptManager.isBiometricEnabled()) {
-                            mainActivity.isBiometricEnabled = true
-                            return@showBiometric
-                        }
-                    },
-                    successAction = {
-                        biometricPromptManager.enableBiometric()
-                        val tokenBiometric =
-                            Pref.getString(mainActivity, Constants.TOKEN_BIOMETRIC)
-                        Extensions.saveAuthToken(mainActivity, tokenBiometric)
-                        Extensions.toastCall(mainActivity, "Set biometric success")
-                    },
-                    failAction = {
-                        Extensions.toastCall(mainActivity, "Set biometric failed")
-                    },
-                )
+                turnOnBiometric()
             } else {
                 showDialog()
             }
@@ -69,20 +50,33 @@ class SettingFragment(private val mainActivity: MainActivity) : Fragment() {
         _binding = null
     }
 
+    private fun turnOnBiometric() {
+        mainActivity.showBiometric(
+            description = "Authenticate to next login",
+            successAction = {
+                biometricPromptManager.enableBiometric()
+                val tokenBiometric =
+                    Pref.getString(mainActivity, Constants.TOKEN_BIOMETRIC)
+                Extensions.saveAuthToken(mainActivity, tokenBiometric)
+                Extensions.toastCall(mainActivity, "Set biometric success on setting")
+            },
+            failAction = {
+                Extensions.toastCall(mainActivity, "Set biometric failed on setting")
+            },
+        )
+    }
+
     private fun showDialog() {
         val dialog = MaterialAlertDialogBuilder(mainActivity)
             .setTitle("Confirm")
             .setMessage("Are you sure to continue")
             .setPositiveButton("Yes") { _, _ ->
                 mainActivity.showBiometric(
-                    false,
                     description = "Please authenticate to disable biometric",
-                    startAction = {
-
-                    },
                     successAction = {
                         biometricPromptManager.disableBiometric()
-                        Pref.remove(mainActivity, Constants.ID_ACCOUNT)
+                        Pref.remove(mainActivity, Constants.TOKEN_BIOMETRIC)
+                        Extensions.toastCall(mainActivity, "Disable biometric success")
                     },
                     failAction = {
 
@@ -94,7 +88,7 @@ class SettingFragment(private val mainActivity: MainActivity) : Fragment() {
                 dialogInterface.dismiss()
             }
             .setOnDismissListener {
-                binding.settingSwitchBiometric.isChecked = true
+
             }
 
         dialog.show()

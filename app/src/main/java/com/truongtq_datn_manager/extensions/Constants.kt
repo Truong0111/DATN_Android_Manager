@@ -15,6 +15,6 @@ data object Constants {
     var PREF_BIOMETRIC_ENABLED = "biometric_enabled"
     var TOKEN_BIOMETRIC_TIME = "tokenBiometricTime"
 
-    var TYPE_APP = "client"
+    var TYPE_APP = "app_manager"
     var JWT = "jwt"
 }
