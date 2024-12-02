@@ -1,7 +1,7 @@
 package com.truongtq_datn_manager.okhttpcrud
 
 data object ApiEndpoint {
-    var Url_Server = "https://192.168.0.118:3001"
+    var Url_Server = "https://burro-ideal-macaw.ngrok-free.app"
 
     val Endpoint_Account: String
         get() = "$Url_Server/account"
