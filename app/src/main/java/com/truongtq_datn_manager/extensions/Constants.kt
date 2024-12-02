@@ -17,4 +17,6 @@ data object Constants {
 
     var TYPE_APP = "app_manager"
     var JWT = "jwt"
+
+    var IP = "ip"
 }

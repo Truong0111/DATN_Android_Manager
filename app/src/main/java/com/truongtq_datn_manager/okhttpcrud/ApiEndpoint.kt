@@ -1,20 +1,41 @@
 package com.truongtq_datn_manager.okhttpcrud
 
 data object ApiEndpoint {
-    private var Url_Server = "https://192.168.0.118:3000"
+    var Url_Server = "https://192.168.0.118:3001"
 
-    var Endpoint_Account = "$Url_Server/account"
-    var Endpoint_Account_Login = "$Endpoint_Account/login"
-    var Endpoint_Account_Register = "$Endpoint_Account/register"
-    var Endpoint_Account_GetAll = "$Endpoint_Account/getAllAccounts"
+    val Endpoint_Account: String
+        get() = "$Url_Server/account"
 
-    var Endpoint_Door = "$Url_Server/door"
-    var Endpoint_Door_Create = "$Endpoint_Door/create"
-    var Endpoint_Door_GetAll = "$Endpoint_Door/getAll"
+    val Endpoint_Account_Login: String
+        get() = "$Endpoint_Account/login"
 
-    var Endpoint_Ticket = "$Url_Server/ticket"
-    var Endpoint_Ticket_Create = "$Endpoint_Ticket/create"
-    var Endpoint_Ticket_IdAccount = "$Endpoint_Ticket/idAccount"
-    var Endpoint_Ticket_IdDoor = "$Endpoint_Ticket/idDoor"
-    var Endpoint_Ticket_GetAll = "$Endpoint_Ticket/getAll"
+    val Endpoint_Account_Register: String
+        get() = "$Endpoint_Account/register"
+
+    val Endpoint_Account_GetAll: String
+        get() = "$Endpoint_Account/getAllAccounts"
+
+    val Endpoint_Door: String
+        get() = "$Url_Server/door"
+
+    val Endpoint_Door_Create: String
+        get() = "$Endpoint_Door/create"
+
+    val Endpoint_Door_GetAll: String
+        get() = "$Endpoint_Door/getAll"
+
+    val Endpoint_Ticket: String
+        get() = "$Url_Server/ticket"
+
+    val Endpoint_Ticket_Create: String
+        get() = "$Endpoint_Ticket/create"
+
+    val Endpoint_Ticket_IdAccount: String
+        get() = "$Endpoint_Ticket/idAccount"
+
+    val Endpoint_Ticket_IdDoor: String
+        get() = "$Endpoint_Ticket/idDoor"
+
+    val Endpoint_Ticket_GetAll: String
+        get() = "$Endpoint_Ticket/getAll"
 }

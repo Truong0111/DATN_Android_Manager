@@ -1,7 +1,6 @@
 package com.truongtq_datn_manager.activity
 
 import android.os.Bundle
-import android.util.Log
 import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.lifecycleScope
 import com.google.gson.Gson
@@ -72,7 +71,9 @@ class LoginActivity : AppCompatActivity() {
                         val token = Extensions.getAuthToken(this@LoginActivity)
                         if (token != null) {
                             setLifeTime()
+                            Extensions.toastCall(applicationContext, "Login successful.")
                             Extensions.changeIntent(this@LoginActivity, MainActivity::class.java)
+                            return@collect
                         }
                     }
 
