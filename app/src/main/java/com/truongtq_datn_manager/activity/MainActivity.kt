@@ -77,6 +77,7 @@ class MainActivity : AppCompatActivity() {
             Extensions.changeIntent(this, LoginActivity::class.java)
             return
         }
+        Extensions.initIpAPI()
     }
 
     private fun setupEventListeners() {

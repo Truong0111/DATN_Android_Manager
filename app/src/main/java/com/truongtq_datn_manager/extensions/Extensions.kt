@@ -4,7 +4,6 @@ import android.app.Activity
 import android.app.DatePickerDialog
 import android.app.TimePickerDialog
 import android.content.*
-import android.net.wifi.WifiManager
 import android.util.Base64
 import android.util.Log
 import android.view.Gravity
@@ -24,16 +23,19 @@ import java.time.format.DateTimeFormatter
 import java.util.Calendar
 import java.util.Locale
 import kotlin.random.Random
-import android.net.ConnectivityManager
-import android.net.LinkAddress
-import android.net.NetworkCapabilities
-import java.net.Inet4Address
-import java.net.InetAddress
-import java.net.NetworkInterface
+import com.google.firebase.database.DataSnapshot
+import com.google.firebase.database.DatabaseError
+import com.google.firebase.database.DatabaseReference
+import com.google.firebase.database.FirebaseDatabase
+import com.google.firebase.database.ValueEventListener
+import com.truongtq_datn_manager.okhttpcrud.ApiEndpoint
 
 
 class Extensions {
     companion object {
+        private lateinit var database: FirebaseDatabase
+        private lateinit var myRef: DatabaseReference
+
         fun sha256(param: String): String {
             val bytes = MessageDigest.getInstance("SHA-256").digest(param.toByteArray())
             return Base64.encodeToString(bytes, Base64.NO_WRAP)
@@ -169,55 +171,25 @@ class Extensions {
             return string.removePrefix("\"").removeSuffix("\"")
         }
 
-        fun getDeviceIP(context: Context): String {
-            val connectivityManager =
-                context.getSystemService(Context.CONNECTIVITY_SERVICE) as ConnectivityManager
-            val activeNetwork = connectivityManager.activeNetwork ?: return "Không có kết nối mạng"
-            val networkCapabilities = connectivityManager.getNetworkCapabilities(activeNetwork)
-                ?: return "Không thể lấy thông tin mạng"
-            val linkProperties = connectivityManager.getLinkProperties(activeNetwork)
-                ?: return "Không thể lấy LinkProperties"
+        fun initIpAPI() {
+            database = FirebaseDatabase.getInstance()
+            myRef = database.getReference(Constants.IP)
 
-            linkProperties.linkAddresses.forEach { linkAddress ->
-                val address = linkAddress.address
-                if (address is Inet4Address) {
-                    return address.hostAddress ?: "Không thể lấy địa chỉ IP"
-                }
-            }
+            myRef.addValueEventListener(object : ValueEventListener {
+                override fun onDataChange(dataSnapshot: DataSnapshot) {
+                    val value = dataSnapshot.getValue(String::class.java)
 
-            return "Không tìm thấy địa chỉ IPv4"
-        }
-
-        private fun intToInetAddress(ip: Int): InetAddress {
-            val bytes = byteArrayOf(
-                (ip and 0xFF).toByte(),
-                (ip shr 8 and 0xFF).toByte(),
-                (ip shr 16 and 0xFF).toByte(),
-                (ip shr 24 and 0xFF).toByte()
-            )
-            return InetAddress.getByAddress(bytes)
-        }
-
-        fun getMobileIPAddress(): String? {
-            try {
-                val interfaces = NetworkInterface.getNetworkInterfaces()
-                for (networkInterface in interfaces) {
-                    val addresses = networkInterface.inetAddresses
-                    for (address in addresses) {
-                        if (!address.isLoopbackAddress && address is InetAddress) {
-                            val ip = address.hostAddress
-                            if (ip != null) {
-                                if (!ip.contains(":")) {
-                                    return ip
-                                }
-                            }
-                        }
+                    if (value != null) {
+                        ApiEndpoint.Url_Server = "https://$value:3001"
+                    } else {
+                        Log.d("Firebase IP", "No data available")
                     }
                 }
-            } catch (e: Exception) {
-                e.printStackTrace()
-            }
-            return null
+
+                override fun onCancelled(databaseError: DatabaseError) {
+                    Log.w("Firebase IP", "Failed to read value.", databaseError.toException())
+                }
+            })
         }
     }
 }
