@@ -66,6 +66,7 @@ class DoorCreateDialog(
     }
 
     private fun submitCreateDoorRequest() {
+        val macAddress = binding.doorMacAddress.text.toString()
         val position = binding.doorPositionInput.text.toString()
         val idAccountCreate = Pref.getString(mainActivity, Constants.ID_ACCOUNT)
 
@@ -80,6 +81,7 @@ class DoorCreateDialog(
             val body =
                 gson.toJson(
                     mapOf(
+                        "macAddress" to macAddress,
                         "position" to position,
                         "idAccountCreate" to idAccountCreate
                     )
@@ -102,7 +104,7 @@ class DoorCreateDialog(
     }
 
     private fun clearDoorForm() {
-        binding.doorIdInput.text?.clear()
+        binding.doorMacAddress.text?.clear()
         binding.doorPositionInput.text?.clear()
     }
 
@@ -110,7 +112,7 @@ class DoorCreateDialog(
         if (result.contents == null) {
             Extensions.toastCall(mainActivity, "Cancelled")
         } else {
-            binding.doorIdInput.setText(result.contents)
+            binding.doorMacAddress.setText(result.contents)
         }
     }
 

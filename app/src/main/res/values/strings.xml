@@ -56,6 +56,7 @@
     <string name="last_updated">Last updated</string>
     <string name="accept">Accept</string>
     <string name="id_ticket">ID Ticket</string>
-    <string name="create_door">Create Door</string>"
+    <string name="create_door">Create Door</string>
+    <string name="mac_address">MAC Address</string>"
 
 </resources>

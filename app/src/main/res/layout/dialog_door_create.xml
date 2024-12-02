@@ -21,11 +21,11 @@
             android:layout_weight="1">
 
             <com.google.android.material.textfield.TextInputEditText
-                android:id="@+id/door_id_input"
+                android:id="@+id/door_mac_address"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
                 android:enabled="false"
-                android:hint="@string/id_door"
+                android:hint="@string/mac_address"
                 android:inputType="none" />
         </com.google.android.material.textfield.TextInputLayout>
 
