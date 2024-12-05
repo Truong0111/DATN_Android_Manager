@@ -6,11 +6,11 @@ plugins {
 }
 
 android {
-    namespace = "com.truongtq_datn_manager"
+    namespace = "com.truongtq_datn"
     compileSdk = 34
 
     defaultConfig {
-        applicationId = "com.truongtq_datn_manager"
+        applicationId = "com.truongtq_datn"
         minSdk = 26
         targetSdk = 34
         versionCode = 1
@@ -29,6 +29,24 @@ android {
             signingConfig = signingConfigs.getByName("debug")
         }
     }
+//    flavorDimensions += "version"
+//    productFlavors {
+//        create("manager") {
+//            dimension = "version"
+//            applicationIdSuffix = ".manager"
+//            versionNameSuffix = "-manager"
+//            applicationId = "com.qrdoor.appmanager"
+//            resValue("string", "app_name", "QR Door Manager")
+//        }
+//        create("user") {
+//            dimension = "version"
+//            applicationIdSuffix = ".user"
+//            versionNameSuffix = "-user"
+//            applicationId = "com.qrdoor.appuser"
+//            resValue("string", "app_name", "QR Door")
+//        }
+//    }
+
     compileOptions {
         sourceCompatibility = JavaVersion.VERSION_17
         targetCompatibility = JavaVersion.VERSION_17
@@ -39,7 +57,7 @@ android {
     buildFeatures {
         compose = true
     }
-    viewBinding{
+    viewBinding {
         enable = true
     }
 }
