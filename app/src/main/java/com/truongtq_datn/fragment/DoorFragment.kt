@@ -68,10 +68,16 @@ class DoorFragment(private val mainActivity: MainActivity) : Fragment() {
             val response = getRequest.execute(true)
 
             withContext(Dispatchers.Main) {
-                if (response != null && response.isSuccessful) {
-                    val responseBody = response.body?.string()
+                if (response == null) {
+                    Extensions.toastCall(mainActivity, "Failed to load doors!")
+                    return@withContext
+                }
 
-                    if (!responseBody.isNullOrEmpty()) {
+                val responseBody = response.body!!.string()
+
+
+                if (response.isSuccessful) {
+                    if (responseBody.isNotEmpty()) {
                         val listType = object : TypeToken<List<DoorResponse>>() {}.type
                         doorResponse = gson.fromJson(responseBody, listType)
                         val doorPositionList: List<DoorItem> =
@@ -94,10 +100,13 @@ class DoorFragment(private val mainActivity: MainActivity) : Fragment() {
                             )
                         binding.doorMain.adapter = adapter
                     } else {
-                        Extensions.toastCall(mainActivity, "Failed to load doors")
+                        Extensions.toastCall(mainActivity, "Can't found any door!")
                     }
                 } else {
-                    Extensions.toastCall(mainActivity, "Failed to load doors")
+                    Extensions.toastCall(
+                        mainActivity,
+                        Extensions.extractJson(responseBody).get("message").toString()
+                    )
                 }
             }
         }
