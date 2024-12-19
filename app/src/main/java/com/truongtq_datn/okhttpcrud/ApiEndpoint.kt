@@ -9,6 +9,9 @@ data object ApiEndpoint {
     val Endpoint_Account_Login: String
         get() = "$Endpoint_Account/login"
 
+    val Endpoint_Account_Login_Biometric: String
+        get() = "$Endpoint_Account/loginBiometric"
+
     val Endpoint_Account_Register: String
         get() = "$Endpoint_Account/register"
 

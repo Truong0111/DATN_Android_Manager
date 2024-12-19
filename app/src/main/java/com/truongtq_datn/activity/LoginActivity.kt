@@ -70,10 +70,7 @@ class LoginActivity : AppCompatActivity() {
                         //Save biometric
                         val token = Extensions.getAuthToken(this@LoginActivity)
                         if (token != null) {
-                            setLifeTime()
-                            Extensions.toastCall(applicationContext, "Login successful.")
-                            Extensions.changeIntent(this@LoginActivity, MainActivity::class.java)
-                            return@collect
+                            loginBiometric()
                         }
                     }
 
@@ -94,7 +91,7 @@ class LoginActivity : AppCompatActivity() {
                 "Login by biometric"
             )
         } else {
-            Extensions.toastCall(this, "You don't register biometric.\nPlease login by password")
+            Extensions.toastCall(this, "You didn't register biometric.\nPlease login by password")
         }
     }
 
@@ -162,5 +159,49 @@ class LoginActivity : AppCompatActivity() {
     private fun setLifeTime() {
         val time = Date().time + 2 * 60 * 60 * 1000
         Pref.setLong(this@LoginActivity, Constants.TOKEN_BIOMETRIC_TIME, time)
+    }
+
+    private fun loginBiometric() {
+        Extensions.showLoadingFragment(supportFragmentManager)
+
+        lifecycleScope.launch(Dispatchers.IO) {
+
+            val loginApi = ApiEndpoint.Endpoint_Account_Login_Biometric
+            val idAccount = Pref.getString(this@LoginActivity, Constants.ID_ACCOUNT)
+            val requestBody =
+                gson.toJson(mapOf("idAccount" to idAccount, "typeApp" to Constants.TYPE_APP))
+            val postRequest = PostRequest(loginApi, requestBody)
+            val response = postRequest.execute(false)
+            Extensions.hideLoadingFragment(supportFragmentManager)
+
+            withContext(Dispatchers.Main) {
+                if (response == null) {
+                    Extensions.toastCall(applicationContext, "Login failed")
+                    return@withContext
+                }
+
+                val responseBody = response.body!!.string()
+
+                if (response.isSuccessful) {
+                    val token = Extensions.extractJson(responseBody).get("token")
+                    Pref.setString(
+                        this@LoginActivity,
+                        Constants.JWT,
+                        Extensions.removePreAndSuffix(token.toString())
+                    )
+
+                    setLifeTime()
+
+                    Extensions.toastCall(applicationContext, "Login successful.")
+                    Extensions.changeIntent(this@LoginActivity, MainActivity::class.java);
+                } else {
+                    Extensions.toastCall(
+                        applicationContext,
+                        Extensions.extractJson(responseBody).get("message")
+                            .toString()
+                    )
+                }
+            }
+        }
     }
 }

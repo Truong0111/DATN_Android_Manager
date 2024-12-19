@@ -73,7 +73,7 @@ class TicketDetailDialog(
             .setTitle("Confirm")
             .setMessage("Are you sure to accept this ticket?")
             .setPositiveButton("Yes") { _, _ ->
-                sendRequest()
+                sendAcceptRequest()
             }
             .setNegativeButton("No") { dialogInterface, _ ->
                 dialogInterface.dismiss()
@@ -85,7 +85,7 @@ class TicketDetailDialog(
         dialog.show()
     }
 
-    private fun sendRequest() {
+    private fun sendAcceptRequest() {
         lifecycleScope.launch(Dispatchers.IO) {
 
             val idTicket = item.idTicket
