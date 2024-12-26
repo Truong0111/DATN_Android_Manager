@@ -57,6 +57,23 @@
     <string name="accept">Accept</string>
     <string name="id_ticket">ID Ticket</string>
     <string name="create_door">Create Door</string>
-    <string name="mac_address">MAC Address</string>"
-
+    <string name="mac_address">MAC Address</string>
+    <string name="config">Config</string>"
+    <string name="status_not_connected">Status: Not Connected</string>
+    <string name="connect_to_esp32">Connect to ESP32</string>
+    <string name="enter_wi_fi_password">Enter Wi-Fi Password</string>
+    <string name="send_wi_fi_credentials">Send Wi-Fi Credentials</string>
+    <string name="scan_wifi">Scan wifi</string>
+    <string name="select_wifi">Select wifi</string>
+    <string name="select_board">Select board</string>
+    <string name="scan_bluetooth_device">Scan bluetooth device</string>
+    <string name="ip_mqtt_server">IP MQTT Server</string>
+    <string name="send_mqtt_credentials">Send MQTT credentials</string>
+    <string name="register_card">Register RFID card</string>
+    <string name="remove_card">Remove RFID card</string>
+    <string name="add">Add</string>
+    <string name="bluetooth">Bluetooth</string>
+    <string name="wifi">Wifi</string>
+    <string name="mqtt">MQTT</string>
+    <string name="rfid">RFID</string>
 </resources>

@@ -27,6 +27,9 @@ data object ApiEndpoint {
     val Endpoint_Door_GetAll: String
         get() = "$Endpoint_Door/getAll"
 
+    val Endpoint_Door_AddAccountAccessDoor: String
+        get() = "$Endpoint_Door/addAccountAccessDoor"
+
     val Endpoint_Ticket: String
         get() = "$Url_Server/ticket"
 

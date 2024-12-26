@@ -14,6 +14,7 @@ import com.truongtq_datn.okhttpcrud.ApiEndpoint
 import com.truongtq_datn.activity.MainActivity
 import com.truongtq_datn.adapter.DoorAdapter
 import com.truongtq_datn.databinding.FragmentDoorBinding
+import com.truongtq_datn.dialog.DoorConfigDialog
 import com.truongtq_datn.dialog.DoorCreateDialog
 import com.truongtq_datn.extensions.Extensions
 import com.truongtq_datn.model.DoorItem
@@ -43,6 +44,10 @@ class DoorFragment(private val mainActivity: MainActivity) : Fragment() {
         super.onStart()
         val layoutManager: RecyclerView.LayoutManager = LinearLayoutManager(context)
         binding.doorMain.setLayoutManager(layoutManager)
+
+        binding.doorBtnConfig.setOnClickListener {
+            showDoorConfigFragment()
+        }
 
         binding.doorBtnRegister.setOnClickListener {
             showDoorRegisterForm()
@@ -115,5 +120,11 @@ class DoorFragment(private val mainActivity: MainActivity) : Fragment() {
     private fun showDoorRegisterForm() {
         val doorCreateDialog = DoorCreateDialog(mainActivity, this)
         doorCreateDialog.show(childFragmentManager, "DoorCreateDialog")
+    }
+
+    private fun showDoorConfigFragment(){
+        val doorConfigDialog = DoorConfigDialog(mainActivity)
+        doorConfigDialog.show(childFragmentManager, "DoorConfigDialog")
+
     }
 }

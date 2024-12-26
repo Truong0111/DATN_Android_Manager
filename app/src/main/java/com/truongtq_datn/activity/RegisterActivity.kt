@@ -69,9 +69,9 @@ class RegisterActivity : ComponentActivity() {
             withContext(Dispatchers.Main) {
                 if (response != null && response.isSuccessful) {
                     Extensions.toastCall(this@RegisterActivity, "Register successful.")
-                    Extensions.changeIntent(this@RegisterActivity, LoginActivity::class.java);
+                    Extensions.changeIntent(this@RegisterActivity, LoginActivity::class.java)
                 } else {
-                    Extensions.toastCall(this@RegisterActivity, "Registers failed.")
+                    Extensions.toastCall(this@RegisterActivity, "Register failed.")
                 }
             }
         }

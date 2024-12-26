@@ -28,7 +28,7 @@ import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 
 class DoorDetailDialog(
-    private val item: DoorItem,
+    private val doorItem: DoorItem,
     private val mainActivity: MainActivity,
     private val doorFragment: DoorFragment
 ) : DialogFragment() {
@@ -55,17 +55,18 @@ class DoorDetailDialog(
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        binding.doorDetailIdDoor.setText(item.idDoor)
-        binding.doorDetailIdAccountCreate.setText(item.idAccountCreate)
-        binding.doorDetailPosition.setText(item.position)
-        binding.doorDetailCreatedAt.setText(item.createdAt)
-        binding.doorDetailLastUpdate.setText(item.lastUpdate)
+        binding.doorDetailIdDoor.setText(doorItem.idDoor)
+        binding.doorDetailIdAccountCreate.setText(doorItem.idAccountCreate)
+        binding.doorDetailPosition.setText(doorItem.position)
+        binding.doorDetailCreatedAt.setText(doorItem.createdAt)
+        binding.doorDetailLastUpdate.setText(doorItem.lastUpdate)
 
         binding.doorDetailBtnCancel.setOnClickListener { dismiss() }
         binding.doorDetailBtnEdit.setOnClickListener { editDoor() }
         binding.doorDetailBtnDelete.setOnClickListener { deleteDoor() }
         binding.doorDetailBtnEditAccept.setOnClickListener { acceptEditDoor() }
         binding.doorDetailBtnEditCancel.setOnClickListener { cancelEditDoor() }
+        binding.doorDetailBtnAddAccountAccess.setOnClickListener { addAccountAccessDoor() }
     }
 
     override fun onDestroyView() {
@@ -73,10 +74,21 @@ class DoorDetailDialog(
         _binding = null
     }
 
+    private fun configDoor() {
+        val doorConfigDialog = DoorConfigDialog(mainActivity)
+        doorConfigDialog.show(childFragmentManager, "DoorCreateDialog")
+    }
+
+    private fun addAccountAccessDoor() {
+        val doorAddAccountAccessDialog = DoorAddAccountAccessDialog(mainActivity, doorItem.idDoor)
+        doorAddAccountAccessDialog.show(childFragmentManager, "DoorCreateDialog")
+    }
+
     private fun editDoor() {
         binding.doorDetailBtnEdit.visibility = View.GONE
         binding.doorDetailBtnDelete.visibility = View.GONE
         binding.doorDetailBtnCancel.visibility = View.GONE
+        binding.doorDetailBtnAddAccountAccess.visibility = View.GONE
 
         binding.doorDetailBtnEditAccept.visibility = View.VISIBLE
         binding.doorDetailBtnEditCancel.visibility = View.VISIBLE
@@ -86,7 +98,7 @@ class DoorDetailDialog(
 
     private fun acceptEditDoor() {
         lifecycleScope.launch(Dispatchers.IO) {
-            val editDoorApi = "${ApiEndpoint.Endpoint_Door}/${item.idDoor}"
+            val editDoorApi = "${ApiEndpoint.Endpoint_Door}/${doorItem.idDoor}"
 
             val idAccount = Pref.getString(mainActivity, Constants.ID_ACCOUNT)
             val newPosition = binding.doorDetailPosition.text.toString()
@@ -121,17 +133,18 @@ class DoorDetailDialog(
         binding.doorDetailBtnEdit.visibility = View.VISIBLE
         binding.doorDetailBtnDelete.visibility = View.VISIBLE
         binding.doorDetailBtnCancel.visibility = View.VISIBLE
+        binding.doorDetailBtnAddAccountAccess.visibility = View.VISIBLE
 
         binding.doorDetailBtnEditAccept.visibility = View.GONE
         binding.doorDetailBtnEditCancel.visibility = View.GONE
 
         binding.doorDetailPosition.isEnabled = false
 
-        binding.doorDetailPosition.setText(item.position)
+        binding.doorDetailPosition.setText(doorItem.position)
     }
 
     private fun deleteDoor() {
-        fetchTicketsRefDoor(item.idDoor) { totalTicketRefDoor ->
+        fetchTicketsRefDoor(doorItem.idDoor) { totalTicketRefDoor ->
             val dialog = MaterialAlertDialogBuilder(mainActivity)
                 .setTitle("Confirm")
                 .setMessage("Are you sure to delete this door?\nHas $totalTicketRefDoor ticket(s) request to this door")
@@ -171,7 +184,7 @@ class DoorDetailDialog(
 
     private fun acceptDeleteDoor() {
         lifecycleScope.launch(Dispatchers.IO) {
-            val editDoorApi = "${ApiEndpoint.Endpoint_Door}/${item.idDoor}"
+            val editDoorApi = "${ApiEndpoint.Endpoint_Door}/${doorItem.idDoor}"
 
 
             val idAccount = Pref.getString(mainActivity, Constants.ID_ACCOUNT)
