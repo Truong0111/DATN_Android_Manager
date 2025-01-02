@@ -103,6 +103,8 @@ class QrFragment(private val mainActivity: Activity) : Fragment() {
             val parts = token.split("::")
             val idAccount = Pref.getString(mainActivity, Constants.ID_ACCOUNT)
 
+            if(parts[0].isEmpty() || parts[1].isEmpty()) return@launch
+
             val requestBody = gson.toJson(mapOf("token" to parts[1]))
 
             val accessDoorApi =

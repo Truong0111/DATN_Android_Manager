@@ -30,6 +30,12 @@ data object ApiEndpoint {
     val Endpoint_Door_AddAccountAccessDoor: String
         get() = "$Endpoint_Door/addAccountAccessDoor"
 
+    val Endpoint_Door_RemoveAccountAccessDoor: String
+        get() = "$Endpoint_Door/removeAccountAccessDoor"
+
+    val Endpoint_Door_GetAccountsCanAccessDoor: String
+        get() = "$Endpoint_Door/getAccountsCanAccessDoor"
+
     val Endpoint_Ticket: String
         get() = "$Url_Server/ticket"
 

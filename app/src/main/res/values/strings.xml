@@ -72,6 +72,7 @@
     <string name="register_card">Register RFID card</string>
     <string name="remove_card">Remove RFID card</string>
     <string name="add">Add</string>
+    <string name="remove">Remove</string>
     <string name="bluetooth">Bluetooth</string>
     <string name="wifi">Wifi</string>
     <string name="mqtt">MQTT</string>

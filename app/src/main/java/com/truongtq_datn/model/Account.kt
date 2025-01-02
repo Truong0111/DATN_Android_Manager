@@ -6,6 +6,5 @@ class Account(
     var email: String,
     var password: String,
     var phoneNumber: String,
-    var refId: String,
-    var arrDoor: List<String>
+    var refId: String
 )

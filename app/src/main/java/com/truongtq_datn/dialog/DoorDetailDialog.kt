@@ -67,6 +67,7 @@ class DoorDetailDialog(
         binding.doorDetailBtnEditAccept.setOnClickListener { acceptEditDoor() }
         binding.doorDetailBtnEditCancel.setOnClickListener { cancelEditDoor() }
         binding.doorDetailBtnAddAccountAccess.setOnClickListener { addAccountAccessDoor() }
+        binding.doorDetailBtnRemoveAccountAccess.setOnClickListener { removeAccountAccessDoor() }
     }
 
     override fun onDestroyView() {
@@ -74,14 +75,14 @@ class DoorDetailDialog(
         _binding = null
     }
 
-    private fun configDoor() {
-        val doorConfigDialog = DoorConfigDialog(mainActivity)
-        doorConfigDialog.show(childFragmentManager, "DoorCreateDialog")
-    }
-
     private fun addAccountAccessDoor() {
         val doorAddAccountAccessDialog = DoorAddAccountAccessDialog(mainActivity, doorItem.idDoor)
         doorAddAccountAccessDialog.show(childFragmentManager, "DoorCreateDialog")
+    }
+
+    private fun removeAccountAccessDoor() {
+        val doorRemoveAccountAccessDialog = DoorRemoveAccountAccessDialog(mainActivity, doorItem.idDoor)
+        doorRemoveAccountAccessDialog.show(childFragmentManager, "DoorCreateDialog")
     }
 
     private fun editDoor() {

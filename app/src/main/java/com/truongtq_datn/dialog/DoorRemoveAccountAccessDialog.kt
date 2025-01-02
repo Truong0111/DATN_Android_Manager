@@ -13,7 +13,7 @@ import com.google.gson.Gson
 import com.google.gson.reflect.TypeToken
 import com.truongtq_datn.activity.MainActivity
 import com.truongtq_datn.adapter.AccountAdapter
-import com.truongtq_datn.databinding.DialogDoorAddAccountBinding
+import com.truongtq_datn.databinding.DialogDoorRemoveAccountBinding
 import com.truongtq_datn.extensions.Extensions
 import com.truongtq_datn.model.AccountItem
 import com.truongtq_datn.model.AccountResponse
@@ -25,12 +25,12 @@ import kotlinx.coroutines.Job
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 
-class DoorAddAccountAccessDialog(
+class DoorRemoveAccountAccessDialog(
     private val mainActivity: MainActivity,
     private val idDoor: String
 ) : DialogFragment() {
 
-    private var _binding: DialogDoorAddAccountBinding? = null
+    private var _binding: DialogDoorRemoveAccountBinding? = null
     private val binding get() = _binding!!
     private var gson = Gson()
     private var job: Job? = null
@@ -48,7 +48,7 @@ class DoorAddAccountAccessDialog(
         container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View {
-        _binding = DialogDoorAddAccountBinding.inflate(inflater, container, false)
+        _binding = DialogDoorRemoveAccountBinding.inflate(inflater, container, false)
         return binding.root
     }
 
@@ -58,7 +58,7 @@ class DoorAddAccountAccessDialog(
         val layoutManager: RecyclerView.LayoutManager = LinearLayoutManager(context)
         binding.accountView.setLayoutManager(layoutManager)
 
-        binding.doorBtnAdd.setOnClickListener { addAccountCanAccess() }
+        binding.doorBtnRemove.setOnClickListener { removeAccountCanAccess() }
         binding.doorBtnCancel.setOnClickListener { dismiss() }
 
         loadAccountToAdapter()
@@ -94,7 +94,7 @@ class DoorAddAccountAccessDialog(
     private var accountResponse: List<AccountResponse> = emptyList()
 
     private fun loadAccountToAdapter() {
-        val getAccountApi = ApiEndpoint.Endpoint_Account_GetAll
+        val getAccountApi = "${ApiEndpoint.Endpoint_Door_GetAccountsCanAccessDoor}/${idDoor}"
 
         job = lifecycleScope.launch(Dispatchers.IO) {
             val getRequest = GetRequest(getAccountApi)
@@ -140,23 +140,23 @@ class DoorAddAccountAccessDialog(
         }
     }
 
-    private fun addAccountCanAccess() {
+    private fun removeAccountCanAccess() {
         if (accountList.isEmpty()) return
 
         lifecycleScope.launch(Dispatchers.IO) {
             val accountIds = adapter.getTickAccount().map { it.id }
 
-            val postAddAccountAccessDoorApi = ApiEndpoint.Endpoint_Door_AddAccountAccessDoor
+            val postRemoveAccountAccessDoorApi = ApiEndpoint.Endpoint_Door_RemoveAccountAccessDoor
             val requestBody = gson.toJson(mapOf("idDoor" to idDoor, "accounts" to accountIds))
-            val postRequest = PostRequest(postAddAccountAccessDoorApi, requestBody)
+            val postRequest = PostRequest(postRemoveAccountAccessDoorApi, requestBody)
             val response = postRequest.execute(true)
 
             withContext(Dispatchers.Main) {
                 if (response != null && response.isSuccessful) {
-                    Extensions.toastCall(requireActivity(), "Add account access door successful.")
+                    Extensions.toastCall(requireActivity(), "Remove account access door successful.")
                     dismiss()
                 } else {
-                    Extensions.toastCall(requireActivity(), "Add account access door failed.")
+                    Extensions.toastCall(requireActivity(), "Remove account access door failed.")
                 }
             }
         }

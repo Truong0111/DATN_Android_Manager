@@ -2,6 +2,7 @@ package com.truongtq_datn.activity
 
 import android.os.Bundle
 import androidx.activity.ComponentActivity
+import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.lifecycleScope
 import com.google.gson.Gson
 import com.truongtq_datn.okhttpcrud.ApiEndpoint
@@ -10,10 +11,11 @@ import com.truongtq_datn.extensions.Extensions
 import com.truongtq_datn.model.Account
 import com.truongtq_datn.okhttpcrud.PostRequest
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.Job
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 
-class RegisterActivity : ComponentActivity() {
+class RegisterActivity : AppCompatActivity() {
     private lateinit var binding: ActivityRegisterBinding
     private val gson = Gson()
 
@@ -57,11 +59,9 @@ class RegisterActivity : ComponentActivity() {
         lifecycleScope.launch(Dispatchers.IO) {
             val loginApi = ApiEndpoint.Endpoint_Account_Register
             val account =
-                Account(firstName, lastName, email, password, phoneNumber, refId, emptyList())
+                Account(firstName, lastName, email, password, phoneNumber, refId)
 
             val requestBody = gson.toJson(account)
-
-            Extensions.toastCall(this@RegisterActivity, "Registering...")
 
             val postRequest = PostRequest(loginApi, requestBody)
             val response = postRequest.execute(false)
