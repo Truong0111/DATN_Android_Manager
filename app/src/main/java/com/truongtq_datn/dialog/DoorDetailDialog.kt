@@ -90,6 +90,7 @@ class DoorDetailDialog(
         binding.doorDetailBtnDelete.visibility = View.GONE
         binding.doorDetailBtnCancel.visibility = View.GONE
         binding.doorDetailBtnAddAccountAccess.visibility = View.GONE
+        binding.doorDetailBtnRemoveAccountAccess.visibility = View.GONE
 
         binding.doorDetailBtnEditAccept.visibility = View.VISIBLE
         binding.doorDetailBtnEditCancel.visibility = View.VISIBLE
@@ -135,6 +136,7 @@ class DoorDetailDialog(
         binding.doorDetailBtnDelete.visibility = View.VISIBLE
         binding.doorDetailBtnCancel.visibility = View.VISIBLE
         binding.doorDetailBtnAddAccountAccess.visibility = View.VISIBLE
+        binding.doorDetailBtnRemoveAccountAccess.visibility = View.VISIBLE
 
         binding.doorDetailBtnEditAccept.visibility = View.GONE
         binding.doorDetailBtnEditCancel.visibility = View.GONE

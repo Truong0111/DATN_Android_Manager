@@ -24,7 +24,6 @@
                 android:id="@+id/door_mac_address"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
-                android:enabled="false"
                 android:hint="@string/mac_address"
                 android:inputType="none" />
         </com.google.android.material.textfield.TextInputLayout>
