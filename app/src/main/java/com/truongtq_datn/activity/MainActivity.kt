@@ -42,11 +42,11 @@ class MainActivity : AppCompatActivity() {
         }
 
         setupEventListeners()
+        showQrFragment()
     }
 
     override fun onStart() {
         super.onStart()
-        showQrFragment()
         if (biometricPromptManager.isBiometricEnabled()) {
             return
         } else {
