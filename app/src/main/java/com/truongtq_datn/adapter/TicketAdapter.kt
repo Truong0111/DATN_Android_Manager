@@ -28,7 +28,7 @@ class TicketAdapter(
     override fun onBindViewHolder(holder: ItemViewHolder, position: Int) {
         val item = itemList[position]
         holder.binding.ticketTitle.text = item.fullName
-        "Create at: ${item.createdAt}".also { holder.binding.ticketDescription.text = it }
+        "Status : ${if (item.isAccept) "Accepted" else "Not Accepted"}".also { holder.binding.ticketDescription.text = it }
         holder.binding.ticketBtnViewTicket.setOnClickListener { showTicketInfo(item) }
     }
 

@@ -10,6 +10,7 @@ import com.truongtq_datn.okhttpcrud.ApiEndpoint
 import com.truongtq_datn.extensions.Constants
 import com.truongtq_datn.activity.MainActivity
 import com.truongtq_datn.databinding.FragmentProfileBinding
+import com.truongtq_datn.dialog.ChangePasswordDialog
 import com.truongtq_datn.extensions.Extensions
 import com.truongtq_datn.extensions.Pref
 import com.truongtq_datn.okhttpcrud.GetRequest
@@ -45,10 +46,8 @@ class ProfileFragment(private val mainActivity: MainActivity) : Fragment() {
     }
 
     private fun openChangePasswordDialog() {
-        ChangePasswordDialogFragment(mainActivity).show(
-            childFragmentManager,
-            "ChangePasswordDialog"
-        )
+        val changePasswordDialog = ChangePasswordDialog(mainActivity, this)
+        changePasswordDialog.show(childFragmentManager, "ChangePasswordDialog");
     }
 
     private fun initValueProfile() {

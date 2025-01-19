@@ -1,4 +1,4 @@
-package com.truongtq_datn.fragment
+package com.truongtq_datn.dialog
 
 import android.app.Activity
 import android.os.Bundle
@@ -8,21 +8,27 @@ import android.view.ViewGroup
 import androidx.fragment.app.DialogFragment
 import androidx.lifecycle.lifecycleScope
 import com.google.gson.Gson
-import com.truongtq_datn.extensions.Constants
 import com.truongtq_datn.databinding.DialogChangepasswordLayoutBinding
+import com.truongtq_datn.extensions.Constants
 import com.truongtq_datn.extensions.Extensions
 import com.truongtq_datn.extensions.Pref
+import com.truongtq_datn.fragment.ProfileFragment
 import com.truongtq_datn.okhttpcrud.ApiEndpoint
 import com.truongtq_datn.okhttpcrud.PatchRequest
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.Job
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 
-class ChangePasswordDialogFragment(private val mainActivity: Activity) : DialogFragment() {
+class ChangePasswordDialog(
+    private val mainActivity: Activity,
+    private val profileFragment: ProfileFragment
+) : DialogFragment() {
 
     private var _binding: DialogChangepasswordLayoutBinding? = null
     private val binding get() = _binding!!
     private var gson = Gson()
+    private var job: Job? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -30,7 +36,8 @@ class ChangePasswordDialogFragment(private val mainActivity: Activity) : DialogF
     }
 
     override fun onCreateView(
-        inflater: LayoutInflater, container: ViewGroup?,
+        inflater: LayoutInflater,
+        container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View {
         _binding = DialogChangepasswordLayoutBinding.inflate(inflater, container, false)
@@ -41,7 +48,7 @@ class ChangePasswordDialogFragment(private val mainActivity: Activity) : DialogF
         super.onViewCreated(view, savedInstanceState)
 
         binding.btnCancel.setOnClickListener {
-            this.dismiss()
+            dismiss()
         }
 
         binding.btnChangePassword.setOnClickListener {
@@ -51,6 +58,7 @@ class ChangePasswordDialogFragment(private val mainActivity: Activity) : DialogF
 
     override fun onDestroyView() {
         super.onDestroyView()
+        job?.cancel()
         _binding = null
     }
 
@@ -75,6 +83,14 @@ class ChangePasswordDialogFragment(private val mainActivity: Activity) : DialogF
             return
         }
 
+        if (newPassword.isEmpty() || confirmPassword.isEmpty()) {
+            Extensions.toastCall(
+                requireContext(),
+                "New password and confirm password cannot be empty"
+            )
+            return
+        }
+
         if (newPassword != confirmPassword) {
             Extensions.toastCall(requireContext(), "Confirm password is not correct")
             return
@@ -82,8 +98,7 @@ class ChangePasswordDialogFragment(private val mainActivity: Activity) : DialogF
 
         val accountId = Pref.getString(mainActivity, Constants.ID_ACCOUNT)
 
-        lifecycleScope.launch(Dispatchers.IO) {
-            Extensions.showLoadingFragment(childFragmentManager)
+        job = lifecycleScope.launch(Dispatchers.IO) {
             val api = "${ApiEndpoint.Endpoint_Account}/$accountId"
             val requestBody = gson.toJson(mapOf("password" to newPassword))
 
@@ -91,11 +106,15 @@ class ChangePasswordDialogFragment(private val mainActivity: Activity) : DialogF
             val response = patchRequest.execute(true)
 
             withContext(Dispatchers.Main) {
-                Extensions.hideLoadingFragment(childFragmentManager)
-                if (response != null && response.isSuccessful) {
+                if (response == null) {
+                    Extensions.toastCall(mainActivity, "Failed to change password")
+                    return@withContext
+                }
+
+                if (response.isSuccessful) {
                     Pref.setString(mainActivity, Constants.PASSWORD, newHashPassword)
                     Extensions.toastCall(mainActivity, "Change password success")
-                    dismiss()
+                    dismissAllowingStateLoss()
                 } else {
                     Extensions.toastCall(mainActivity, "Change password failed")
                 }
